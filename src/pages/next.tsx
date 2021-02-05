@@ -26,28 +26,54 @@ const Card = styled.div`
 const NextPage: FunctionComponent<PageProps> = ({ location }) => {
   const [state, dispatch] = useTestHook(location.state as StateObject);
   const [userInput, setUserInput] = useState("");
+  const [time, setTime] = useState(null);
+  const [startTime, setStartTime] = useState(Date.now);
 
   useEffect(() => {
     const locationState = location.state as any;
 
-    if (!(locationState && locationState.selectedCategories.length)) {
+    if (!(locationState && locationState.selectedKana.length)) {
       navigate("/test");
     }
   }, []);
 
   useEffect(() => {
-    if (state.currentKana === undefined) {
+    const interval = setInterval(() => {
+      setTime(Date.now() - startTime);
+    }, 1);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [startTime]);
+
+  useEffect(() => {
+    if (time >= 2000) {
+      setStartTime(Date.now());
+      dispatch({ type: "incorrect", time: time });
+      setUserInput("");
+    }
+  }, [time]);
+
+  useEffect(() => {
+    const locationState = location.state as any;
+
+    if (
+      locationState.selectedKana.length > 0 &&
+      state.finishedKana.length === locationState.selectedKana.length
+    ) {
       navigate("/results", { state: { results: state.finishedKana } });
     }
   }, [state.currentKana]);
 
   const handleInput = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setStartTime(Date.now());
 
     if (userInput === state.currentKana.romaji) {
-      dispatch({ type: "correct" });
+      dispatch({ type: "correct", time: time });
     } else {
-      dispatch({ type: "incorrect" });
+      dispatch({ type: "incorrect", time: time });
     }
 
     setUserInput("");
@@ -59,6 +85,12 @@ const NextPage: FunctionComponent<PageProps> = ({ location }) => {
         <FullHeightSection>
           <Centered>
             <Card>
+              {state.currentKana && state.currentKana.incorrect && (
+                <p style={{ color: "red" }}>
+                  Incorrect: {state.currentKana.incorrect}
+                </p>
+              )}
+              <p>Time: {(time / 1000).toFixed(3)}</p>
               <h2>{state.currentKana && state.currentKana.kana}</h2>
               <form onSubmit={(event) => handleInput(event)}>
                 <input

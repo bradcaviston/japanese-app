@@ -1,22 +1,18 @@
 import _ from "lodash";
 import { useReducer } from "react";
+import { Kana } from "../data/kana";
 
 export interface StateObject {
   testKana: any[];
   finishedKana: any[];
-  currentKana: {
-    kana: string;
-    romaji: string;
-  };
+  currentKana: any;
 }
 
 function init(state): StateObject {
   const tempKana = [];
 
-  if (state && state.selectedCategories.length) {
-    state.selectedCategories.forEach((category) => {
-      tempKana.push(...category.kana);
-    });
+  if (state && state.selectedKana.length) {
+    tempKana.push(...state.selectedKana);
   }
 
   const shuffledKana = _.shuffle(tempKana);
@@ -28,8 +24,16 @@ function init(state): StateObject {
   };
 }
 
-function correct(state: StateObject): StateObject {
-  const finishedKana = [...state.finishedKana, state.currentKana];
+function correct(state: StateObject, time: number): StateObject {
+  const aFinishedKana = state.currentKana;
+
+  if (aFinishedKana.time) {
+    aFinishedKana.time.push(time);
+  } else {
+    aFinishedKana.time = [time];
+  }
+
+  const finishedKana = [...state.finishedKana, aFinishedKana];
   const testKana = state.testKana.filter((value) => {
     if (value === state.currentKana) {
       return false;
@@ -45,7 +49,7 @@ function correct(state: StateObject): StateObject {
   };
 }
 
-function incorrect(state: StateObject): StateObject {
+function incorrect(state: StateObject, time: number): StateObject {
   const finishedKana = [...state.finishedKana];
   const testKana = state.testKana
     .filter((kana) => {
@@ -54,6 +58,13 @@ function incorrect(state: StateObject): StateObject {
       if (newKana.incorrect === 2) {
         newKana.incorrect = newKana.incorrect + 1;
         newKana.failed = true;
+
+        if (newKana.time) {
+          newKana.time.push(time);
+        } else {
+          newKana.time = [time];
+        }
+
         finishedKana.push(newKana);
         return false;
       }
@@ -69,6 +80,12 @@ function incorrect(state: StateObject): StateObject {
         } else {
           newKana.incorrect = 1;
         }
+
+        if (newKana.time) {
+          newKana.time.push(time);
+        } else {
+          newKana.time = [time];
+        }
       }
 
       return newKana;
@@ -83,12 +100,12 @@ function incorrect(state: StateObject): StateObject {
   };
 }
 
-function dispatch(state: StateObject, action: { type: string }) {
+function dispatch(state: StateObject, action: { type: string; time: number }) {
   switch (action.type) {
     case "correct":
-      return correct(state);
+      return correct(state, action.time);
     case "incorrect":
-      return incorrect(state);
+      return incorrect(state, action.time);
   }
 }
 

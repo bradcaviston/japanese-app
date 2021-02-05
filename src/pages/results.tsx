@@ -25,6 +25,12 @@ const ResultsPage: FunctionComponent<PageProps> = ({ location }) => {
               </h4>
               {result.failed && <h4>FAILED</h4>}
               {result.incorrect && <h4>incorrect: {result.incorrect}</h4>}
+              {result.time &&
+                result.time.map((aTime, index) => (
+                  <h4 key={index}>
+                    {index}: {aTime}
+                  </h4>
+                ))}
             </div>
           ))}
         </FullHeightSection>

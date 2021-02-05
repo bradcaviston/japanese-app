@@ -1,9 +1,9 @@
 import { Link } from "gatsby";
-import React, { useEffect, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import styled from "styled-components";
 import { Container, FullHeightSection, sizes } from "../components/common";
 import Layout from "../components/layout";
-import kana from "../data/kana-json.json";
+import kana, { Categories, Kana, Types } from "../data/kana";
 
 const CategoryCardStyles = styled.div<{ active: boolean }>`
   border: ${(props) =>
@@ -44,90 +44,211 @@ const Flex = styled.div`
   height: calc(100% - 2.17rem);
 `;
 
-function CategoryCard({ category, selectedCategories, setSelectedCategories }) {
-  const [active, setActive] = useState(false);
-  const selectCategory = (category: object) => {
-    setSelectedCategories([...selectedCategories, category]);
-  };
-  const deselectCategory = (category: object) => {
-    const newSelectedCategories = [...selectedCategories];
-    const index = selectedCategories.indexOf(category);
+interface CategoryCardProps {
+  category: string;
+  type: string;
+  active: boolean;
+  onClick: () => void;
+}
 
-    if (index !== -1) {
-      newSelectedCategories.splice(index, 1);
-      setSelectedCategories(newSelectedCategories);
-    }
-
-    setActive(false);
-  };
-
-  function onClick() {
-    if (active) {
-      deselectCategory(category);
-    } else {
-      selectCategory(category);
-    }
-  }
-
-  useEffect(() => {
-    selectedCategories.forEach((selectedCategory) => {
-      if (category.kana[0].kana === selectedCategory.kana[0].kana) {
-        setActive(true);
-      }
-    });
-  }, [selectedCategories]);
-
+const CategoryCard: FunctionComponent<CategoryCardProps> = ({
+  category,
+  type,
+  active,
+  onClick,
+}) => {
   return (
     <CategoryCardStyles active={active} onClick={() => onClick()}>
-      <h3>{category.name}</h3>
+      <h3>{category}</h3>
       <Flex>
         <table>
           <TableBody>
-            {category.kana.map((kana) => {
-              return (
-                <tr key={kana.kana}>
-                  <td>{kana.romaji}</td>
-                  <td>{kana.kana}</td>
-                </tr>
-              );
-            })}
+            {kana
+              .filter((aKana) => {
+                if (aKana.type === type && aKana.category === category) {
+                  return true;
+                }
+
+                return false;
+              })
+              .map((kana) => {
+                return (
+                  <tr key={kana.id}>
+                    <td>{kana.romaji}</td>
+                    <td>{kana.kana}</td>
+                  </tr>
+                );
+              })}
           </TableBody>
         </table>
       </Flex>
     </CategoryCardStyles>
   );
-}
+};
 
 function TestPage() {
-  const [selectedCategories, setSelectedCategories] = useState<any[]>([]);
-
-  function addAll(type) {
-    setSelectedCategories([...selectedCategories, ...type.categories]);
-  }
+  const [selectedKana, setSelectedKana] = useState<Kana[]>([]);
 
   return (
     <Layout>
       <Container size={sizes.lg}>
         <FullHeightSection>
-          {/*kana.map((type) => (
-            <div key={type.name}>
-              <div>
-                <h2>{type.name}</h2>
-                <button onClick={() => addAll(type)}>Add all</button>
+          {Object.values(Types).map((type) => {
+            const [allActive, setAllActive] = useState(false);
+
+            function allFunction() {
+              if (!allActive) {
+                const newKana: Kana[] = [];
+
+                kana.forEach((aKana) => {
+                  if (aKana.type === type) {
+                    if (
+                      selectedKana.find((bKana) =>
+                        aKana.category === bKana.category &&
+                        aKana.type === bKana.type
+                          ? true
+                          : false
+                      )
+                    ) {
+                      return;
+                    }
+
+                    newKana.push(aKana);
+                  }
+
+                  setSelectedKana([...selectedKana, ...newKana]);
+                });
+              } else {
+                const filteredSelection = selectedKana.filter((aKana) => {
+                  if (aKana.type === type) {
+                    return false;
+                  }
+
+                  return true;
+                });
+
+                setSelectedKana(filteredSelection);
+              }
+            }
+
+            useEffect(() => {
+              const kanaOfType = kana.filter((aKana) => {
+                if (aKana.type === type) {
+                  return true;
+                }
+
+                return false;
+              });
+
+              setAllActive(
+                kanaOfType.every((aKana) => {
+                  return selectedKana.some((bKana) => {
+                    if (aKana.id === bKana.id) {
+                      return true;
+                    }
+
+                    return false;
+                  });
+                })
+              );
+            }, [selectedKana]);
+
+            return (
+              <div key={type}>
+                <div>
+                  <h2>{type}</h2>
+                  <button onClick={() => allFunction()}>
+                    {allActive ? "Remove all" : "Add all"}
+                  </button>
+                </div>
+                <Grid>
+                  {Object.values(Categories).map((category) => {
+                    const selectCategory = () => {
+                      const newSelectedKana = kana.filter((aKana) => {
+                        if (
+                          aKana.type === type &&
+                          aKana.category === category
+                        ) {
+                          return true;
+                        }
+
+                        return false;
+                      });
+
+                      setSelectedKana([...selectedKana, ...newSelectedKana]);
+                    };
+                    const deselectCategory = () => {
+                      const newSelectedKana = selectedKana.filter((aKana) => {
+                        if (
+                          aKana.type === type &&
+                          aKana.category === category
+                        ) {
+                          return false;
+                        }
+
+                        return true;
+                      });
+
+                      setSelectedKana(newSelectedKana);
+                    };
+
+                    function onClick() {
+                      if (
+                        selectedKana.some((aKana) => {
+                          if (
+                            aKana.category === category &&
+                            aKana.type === type
+                          ) {
+                            return true;
+                          } else {
+                            return false;
+                          }
+                        })
+                      ) {
+                        deselectCategory();
+                      } else {
+                        selectCategory();
+                      }
+                    }
+
+                    if (
+                      selectedKana.some((aKana) => {
+                        if (
+                          aKana.category === category &&
+                          aKana.type === type
+                        ) {
+                          return true;
+                        } else {
+                          return false;
+                        }
+                      })
+                    ) {
+                      return (
+                        <CategoryCard
+                          key={category}
+                          category={category}
+                          type={type}
+                          active={true}
+                          onClick={onClick}
+                        />
+                      );
+                    } else {
+                      return (
+                        <CategoryCard
+                          key={category}
+                          category={category}
+                          type={type}
+                          active={false}
+                          onClick={onClick}
+                        />
+                      );
+                    }
+                  })}
+                </Grid>
               </div>
-              <Grid>
-                {type.categories.map((category) => (
-                  <CategoryCard
-                    key={category.name}
-                    category={category}
-                    selectedCategories={selectedCategories}
-                    setSelectedCategories={setSelectedCategories}
-                  />
-                ))}
-              </Grid>
-            </div>
-                ))*/}
-          <Link to="/next" state={{ selectedCategories: selectedCategories }}>
+            );
+          })}
+          <Link to="/next" state={{ selectedKana: selectedKana }}>
             Test
           </Link>
         </FullHeightSection>
