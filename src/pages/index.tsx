@@ -8,7 +8,7 @@ function IndexPage() {
     <Layout>
       <Container size={sizes.lg}>
         <h1>Test</h1>
-        <Link to="/test">Start</Link>
+        <Link to="/quiz/selection">Start</Link>
       </Container>
     </Layout>
   );

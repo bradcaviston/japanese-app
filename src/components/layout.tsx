@@ -9,16 +9,21 @@ const GlobalStyles = createGlobalStyle`
     transition: all 0.25s linear;
     font-family: 'Rubik';
   }
+
+  h1,h2 {
+    font-family: 'Dosis';
+    font-weight: 700;
+  }
 `;
 
 const lightTheme = {
-  body: "white",
-  text: "black",
+  body: "#FAFAFA",
+  text: "#000000",
 };
 
 const darkTheme = {
-  body: "black",
-  text: "white",
+  body: "#252624",
+  text: "#CCCCCC",
 };
 
 const Layout: FunctionComponent = ({ children }) => {

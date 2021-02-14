@@ -7,7 +7,7 @@ module.exports = {
       resolve: "gatsby-plugin-web-font-loader",
       options: {
         google: {
-          families: ["Dosis:800,700", "Rubik"],
+          families: ["Dosis:800,700", "Rubik:400,500,700", "Kosugi Maru"],
         },
       },
     },

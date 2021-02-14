@@ -1,6 +1,6 @@
 import { PageProps } from "gatsby";
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { Container, FullHeightSection, sizes } from "../components/common";
+import { Container, FullHeightDiv, sizes } from "../components/common";
 import Layout from "../components/layout";
 
 const ResultsPage: FunctionComponent<PageProps> = ({ location }) => {
@@ -17,7 +17,7 @@ const ResultsPage: FunctionComponent<PageProps> = ({ location }) => {
   return (
     <Layout>
       <Container size={sizes.lg}>
-        <FullHeightSection>
+        <FullHeightDiv>
           {results.map((result) => (
             <div key={result.kana}>
               <h4>
@@ -33,7 +33,7 @@ const ResultsPage: FunctionComponent<PageProps> = ({ location }) => {
                 ))}
             </div>
           ))}
-        </FullHeightSection>
+        </FullHeightDiv>
       </Container>
     </Layout>
   );

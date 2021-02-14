@@ -6,9 +6,10 @@ import React, {
   useState,
 } from "react";
 import styled from "styled-components";
-import { Container, FullHeightDiv, sizes } from "../components/common";
-import Layout from "../components/layout";
-import useTestHook, { StateObject } from "../hooks/useTestHook";
+import { Container, sizes, FullHeightDiv, Card } from "../../components/common";
+import Layout from "../../components/layout";
+import useTestHook, { StateObject } from "../../hooks/useTestHook";
+import { FiXCircle } from "react-icons/fi";
 
 const Centered = styled.div`
   display: flex;
@@ -17,13 +18,61 @@ const Centered = styled.div`
   height: 100%;
 `;
 
-const Card = styled.div`
-  border: 2px solid grey;
-  border-radius: 15px;
-  padding: 1rem;
+const QuizCard = styled(Card)`
+  padding: 2rem;
 `;
 
-const NextPage: FunctionComponent<PageProps> = ({ location }) => {
+const KanaArea = styled.div`
+  text-align: center;
+  margin: 0 0 3rem 0;
+`;
+
+const Kana = styled.h2`
+  font-family: "Kosugi Maru", sans-serif;
+  font-size: 3rem;
+  margin: 0;
+`;
+
+const Timer = styled.div`
+  height: 1rem;
+  width: 100%;
+  border-radius: 15px;
+  background-color: #d3f6e6;
+`;
+
+const Time = styled.div`
+  height: 1rem;
+  width: 90%;
+  border-radius: 15px;
+  background-color: #2ad484;
+`;
+
+const Input = styled.input`
+  border: 2px solid #dedede;
+  border-radius: 10px;
+  padding: 0.5rem;
+  font-size: 1.25rem;
+
+  &:focus {
+    outline: none;
+  }
+`;
+
+const IncorrectArea = styled.div`
+  height: 2rem;
+  margin: 1rem 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+`;
+
+const IncorrectIcon = styled(FiXCircle)`
+  color: red;
+  font-size: 1.5rem;
+  margin-left: 0.25rem;
+`;
+
+const QuizPage: FunctionComponent<PageProps> = ({ location }) => {
   const [state, dispatch] = useTestHook(location.state as StateObject);
   const [userInput, setUserInput] = useState("");
   const [time, setTime] = useState(null);
@@ -36,7 +85,7 @@ const NextPage: FunctionComponent<PageProps> = ({ location }) => {
       navigate("/test");
     }
   }, []);
-
+  /*
   useEffect(() => {
     const interval = setInterval(() => {
       setTime(Date.now() - startTime);
@@ -47,6 +96,7 @@ const NextPage: FunctionComponent<PageProps> = ({ location }) => {
     };
   }, [startTime]);
 
+  
   useEffect(() => {
     if (time >= 2000) {
       setStartTime(Date.now());
@@ -54,6 +104,7 @@ const NextPage: FunctionComponent<PageProps> = ({ location }) => {
       setUserInput("");
     }
   }, [time]);
+  */
 
   useEffect(() => {
     const locationState = location.state as any;
@@ -84,24 +135,30 @@ const NextPage: FunctionComponent<PageProps> = ({ location }) => {
       <Container size={sizes.lg}>
         <FullHeightDiv>
           <Centered>
-            <Card>
-              {state.currentKana && state.currentKana.incorrect && (
-                <p style={{ color: "red" }}>
-                  Incorrect: {state.currentKana.incorrect}
-                </p>
-              )}
-              <p>Time: {(time / 1000).toFixed(3)}</p>
-              <h2>{state.currentKana && state.currentKana.kana}</h2>
+            <QuizCard>
+              <Timer>
+                <Time />
+              </Timer>
+              <IncorrectArea>
+                {state.currentKana.incorrect &&
+                  Array(state.currentKana.incorrect)
+                    .fill("test")
+                    .map((test, index) => <IncorrectIcon key={index} />)}
+              </IncorrectArea>
+              <KanaArea>
+                <Kana>{state.currentKana.kana}</Kana>
+              </KanaArea>
               <form onSubmit={(event) => handleInput(event)}>
-                <input
+                <Input
                   type="text"
                   autoFocus
                   onBlur={(event) => event.target.focus()}
+                  maxLength={3}
                   value={userInput}
                   onChange={(event) => setUserInput(event.target.value)}
                 />
               </form>
-            </Card>
+            </QuizCard>
           </Centered>
         </FullHeightDiv>
       </Container>
@@ -109,4 +166,4 @@ const NextPage: FunctionComponent<PageProps> = ({ location }) => {
   );
 };
 
-export default NextPage;
+export default QuizPage;

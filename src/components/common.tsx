@@ -17,6 +17,12 @@ export const Container = styled.div<ContainerProps>`
   margin: auto;
 `;
 
-export const FullHeightSection = styled.section`
+export const FullHeightDiv = styled.div`
   height: calc(100vh - 5rem);
+`;
+
+export const Card = styled.div`
+  background-color: white;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
+  border-radius: 25px;
 `;
