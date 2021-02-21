@@ -1,6 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 import styled from "styled-components";
 import { Categories, Kana } from "../../data/kana";
+import { Ruler } from "../common";
 import Category from "./category";
 
 const Grid = styled.div`
@@ -35,11 +36,6 @@ const AllButton = styled.button`
   &:focus {
     outline: 0;
   }
-`;
-
-const Ruler = styled.hr`
-  border: 2px solid #e6e6e6;
-  border-radius: 5px;
 `;
 
 interface KanaCategroy {

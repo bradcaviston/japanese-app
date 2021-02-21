@@ -8,6 +8,9 @@ const GlobalStyles = createGlobalStyle`
     color: ${({ theme }) => theme.text};
     transition: all 0.25s linear;
     font-family: 'Rubik';
+    background: rgb(255,244,203);
+    background: linear-gradient(45deg, rgba(255,244,203,1) 0%, rgba(255,241,235,1) 100%);
+    min-height: 100vh;
   }
 
   h1,h2 {

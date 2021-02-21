@@ -5,7 +5,6 @@ import { Container, sizes } from "./common";
 
 const NavContainer = styled(Container)`
   height: 5rem;
-  background-color: lightgrey;
   padding: 0 0.5rem;
 `;
 

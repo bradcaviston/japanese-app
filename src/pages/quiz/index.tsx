@@ -5,18 +5,18 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import styled from "styled-components";
-import { Container, sizes, FullHeightDiv, Card } from "../../components/common";
+import styled, { keyframes } from "styled-components";
+import {
+  Container,
+  sizes,
+  FullHeightDiv,
+  Card,
+  Centered,
+} from "../../components/common";
 import Layout from "../../components/layout";
 import useTestHook, { StateObject } from "../../hooks/useTestHook";
 import { FiXCircle } from "react-icons/fi";
-
-const Centered = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-`;
+import Timer from "../../components/quiz-page/timer";
 
 const QuizCard = styled(Card)`
   padding: 2rem;
@@ -27,24 +27,20 @@ const KanaArea = styled.div`
   margin: 0 0 3rem 0;
 `;
 
+const test = keyframes`
+  0% {
+    transform: translateX(-15px);
+  }
+  100% {
+    transform: translateX(0px);
+  }
+`;
+
 const Kana = styled.h2`
   font-family: "Kosugi Maru", sans-serif;
   font-size: 3rem;
   margin: 0;
-`;
-
-const Timer = styled.div`
-  height: 1rem;
-  width: 100%;
-  border-radius: 15px;
-  background-color: #d3f6e6;
-`;
-
-const Time = styled.div`
-  height: 1rem;
-  width: 90%;
-  border-radius: 15px;
-  background-color: #2ad484;
+  animation: ${test} 100ms ease-in;
 `;
 
 const Input = styled.input`
@@ -66,17 +62,30 @@ const IncorrectArea = styled.div`
   align-items: center;
 `;
 
+const animation = keyframes`
+  0% {
+    transform: translateY(-5px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+`;
+
 const IncorrectIcon = styled(FiXCircle)`
   color: red;
   font-size: 1.5rem;
   margin-left: 0.25rem;
+  animation: ${animation} 100ms linear;
 `;
 
 const QuizPage: FunctionComponent<PageProps> = ({ location }) => {
   const [state, dispatch] = useTestHook(location.state as StateObject);
   const [userInput, setUserInput] = useState("");
-  const [time, setTime] = useState(null);
   const [startTime, setStartTime] = useState(Date.now);
+  const [timeout, setTimeoutVariable] = useState(null);
+  const maxTime = 5000;
 
   useEffect(() => {
     const locationState = location.state as any;
@@ -85,26 +94,21 @@ const QuizPage: FunctionComponent<PageProps> = ({ location }) => {
       navigate("/test");
     }
   }, []);
-  /*
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTime(Date.now() - startTime);
-    }, 1);
 
-    return () => {
-      clearInterval(interval);
-    };
+  useEffect(() => {
+    clearTimeout(timeout);
+
+    setTimeoutVariable(
+      setTimeout(() => {
+        const finalTime = maxTime;
+
+        dispatch({ type: "incorrect", time: finalTime });
+
+        setStartTime(Date.now());
+        setUserInput("");
+      }, maxTime)
+    );
   }, [startTime]);
-
-  
-  useEffect(() => {
-    if (time >= 2000) {
-      setStartTime(Date.now());
-      dispatch({ type: "incorrect", time: time });
-      setUserInput("");
-    }
-  }, [time]);
-  */
 
   useEffect(() => {
     const locationState = location.state as any;
@@ -119,14 +123,15 @@ const QuizPage: FunctionComponent<PageProps> = ({ location }) => {
 
   const handleInput = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setStartTime(Date.now());
+    const finalTime = Date.now() - startTime;
 
     if (userInput === state.currentKana.romaji) {
-      dispatch({ type: "correct", time: time });
+      dispatch({ type: "correct", time: finalTime });
     } else {
-      dispatch({ type: "incorrect", time: time });
+      dispatch({ type: "incorrect", time: finalTime });
     }
 
+    setStartTime(Date.now());
     setUserInput("");
   };
 
@@ -136,17 +141,20 @@ const QuizPage: FunctionComponent<PageProps> = ({ location }) => {
         <FullHeightDiv>
           <Centered>
             <QuizCard>
-              <Timer>
-                <Time />
-              </Timer>
+              <Timer startTime={startTime} maxTime={maxTime} />
               <IncorrectArea>
-                {state.currentKana.incorrect &&
+                {state.currentKana &&
+                  state.currentKana.incorrect &&
                   Array(state.currentKana.incorrect)
-                    .fill("test")
-                    .map((test, index) => <IncorrectIcon key={index} />)}
+                    .fill(null)
+                    .map((_, index) => <IncorrectIcon key={index} />)}
               </IncorrectArea>
               <KanaArea>
-                <Kana>{state.currentKana.kana}</Kana>
+                {state.currentKana && (
+                  <Kana key={state.currentKana.id}>
+                    {state.currentKana.kana}
+                  </Kana>
+                )}
               </KanaArea>
               <form onSubmit={(event) => handleInput(event)}>
                 <Input
