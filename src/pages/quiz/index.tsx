@@ -44,7 +44,10 @@ const Kana = styled.h2`
 `;
 
 const Input = styled.input`
-  border: 2px solid #dedede;
+  border: 2px solid ${({ theme }) => theme.cardContrast};
+  background-color: ${({ theme }) => theme.card};
+  caret-color: ${({ theme }) => theme.caret};
+  color: ${({ theme }) => theme.text};
   border-radius: 10px;
   padding: 0.5rem;
   font-size: 1.25rem;
@@ -90,8 +93,8 @@ const QuizPage: FunctionComponent<PageProps> = ({ location }) => {
   useEffect(() => {
     const locationState = location.state as any;
 
-    if (!(locationState && locationState.selectedKana.length)) {
-      navigate("/test");
+    if (!(locationState && locationState.selectedKana)) {
+      navigate("/quiz/selection");
     }
   }, []);
 
@@ -108,16 +111,19 @@ const QuizPage: FunctionComponent<PageProps> = ({ location }) => {
         setUserInput("");
       }, maxTime)
     );
+
+    return () => clearTimeout(timeout);
   }, [startTime]);
 
   useEffect(() => {
     const locationState = location.state as any;
 
     if (
+      locationState &&
       locationState.selectedKana.length > 0 &&
       state.finishedKana.length === locationState.selectedKana.length
     ) {
-      navigate("/results", { state: { results: state.finishedKana } });
+      navigate("/quiz/results", { state: { results: state.finishedKana } });
     }
   }, [state.currentKana]);
 

@@ -5,7 +5,7 @@ const TimerContainer = styled.div`
   height: 1rem;
   width: 100%;
   border-radius: 15px;
-  background-color: #d3f6e6;
+  background-color: ${({ theme }) => theme.cardContrast};
   overflow: hidden;
 `;
 

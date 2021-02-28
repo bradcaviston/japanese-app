@@ -1,53 +1,35 @@
 import * as React from "react";
-import { Link } from "gatsby";
+import styled from "styled-components";
+import {
+  Container,
+  sizes,
+  Surface,
+  Ruler,
+  ButtonSection,
+  Grow,
+  BigLinkButton,
+} from "../components/common";
+import Layout from "../components/layout";
 
-// styles
-const pageStyles = {
-  color: "#232129",
-  padding: "96px",
-  fontFamily: "-apple-system, Roboto, sans-serif, serif",
-};
-const headingStyles = {
-  marginTop: 0,
-  marginBottom: 64,
-  maxWidth: 320,
-};
+const Heading = styled.h1`
+  margin-bottom: 0;
+`;
 
-const paragraphStyles = {
-  marginBottom: 48,
-};
-const codeStyles = {
-  color: "#8A6534",
-  padding: 4,
-  backgroundColor: "#FFF4DB",
-  fontSize: "1.25rem",
-  borderRadius: 4,
-};
-
-// markup
 const NotFoundPage = () => {
   return (
-    <main style={pageStyles}>
-      <title>Not found</title>
-      <h1 style={headingStyles}>Page not found</h1>
-      <p style={paragraphStyles}>
-        Sorry{" "}
-        <span role="img" aria-label="Pensive emoji">
-          😔
-        </span>{" "}
-        we couldn’t find what you were looking for.
-        <br />
-        {process.env.NODE_ENV === "development" ? (
-          <>
-            <br />
-            Try creating a page in <code style={codeStyles}>src/pages/</code>.
-            <br />
-          </>
-        ) : null}
-        <br />
-        <Link to="/">Go home</Link>.
-      </p>
-    </main>
+    <Layout>
+      <Container size={sizes.lg}>
+        <Surface>
+          <Heading>404</Heading>
+          <Ruler />
+          <p>Looks like you navigated to a page that does not exist.</p>
+          <ButtonSection>
+            <Grow />
+            <BigLinkButton to="/quiz/selection">Go home</BigLinkButton>
+          </ButtonSection>
+        </Surface>
+      </Container>
+    </Layout>
   );
 };
 

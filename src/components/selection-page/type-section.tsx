@@ -1,7 +1,8 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 import styled from "styled-components";
-import { Categories, Kana } from "../../data/kana";
-import { Ruler } from "../common";
+import { Kana } from "../../data/kana";
+import { getKanaByCategroy } from "../../utils";
+import { Button, Ruler } from "../common";
 import Category from "./category";
 
 const Grid = styled.div`
@@ -24,39 +25,6 @@ const TopFlex = styled.div`
   justify-content: space-between;
   align-items: center;
 `;
-
-const AllButton = styled.button`
-  color: blue;
-  border: 2px solid;
-  border-radius: 30px;
-  font-weight: 500;
-  padding: 0.3rem 0.6rem;
-  background-color: white;
-
-  &:focus {
-    outline: 0;
-  }
-`;
-
-interface KanaCategroy {
-  name: Categories;
-  kana: Kana[];
-}
-
-function getKanaByCategroy(kana: Kana[]): KanaCategroy[] {
-  const KanaCategries: KanaCategroy[] = [];
-
-  Object.values(Categories).forEach((category) => {
-    KanaCategries.push({
-      name: category,
-      kana: kana.filter((aKana) =>
-        aKana.category === category ? true : false
-      ),
-    });
-  });
-
-  return KanaCategries;
-}
 
 interface TypeSectionProps {
   type: string;
@@ -124,9 +92,9 @@ const TypeSection: FunctionComponent<TypeSectionProps> = ({
       <Top>
         <TopFlex>
           <Header>{type}</Header>
-          <AllButton onClick={() => allFunction()}>
+          <Button onClick={() => allFunction()}>
             {allActive ? "Remove all" : "Add all"}
-          </AllButton>
+          </Button>
         </TopFlex>
         <Ruler />
       </Top>

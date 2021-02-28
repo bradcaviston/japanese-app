@@ -28,8 +28,9 @@ const TypeArea = styled.div<{ active: boolean }>`
   justify-content: center;
   align-items: center;
   border-radius: 15px 0 0 15px;
-  background-color: ${(props) => (props.active ? "#2AD484" : "#eaeaea")};
-  color: ${(props) => (props.active ? "white" : "black")};
+  background-color: ${(props) =>
+    props.active ? "#2AD484" : props.theme.cardContrast};
+  color: ${(props) => (props.active ? "white" : props.theme.text)};
   padding: 0.7rem;
 
   h3 {

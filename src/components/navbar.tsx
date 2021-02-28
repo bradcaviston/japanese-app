@@ -1,9 +1,12 @@
 import { Link } from "gatsby";
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useContext } from "react";
 import styled from "styled-components";
-import { Container, sizes } from "./common";
+import { ThemeContext } from "../theme/theme-wrapper";
+import { Button, Container, sizes } from "./common";
 
 const NavContainer = styled(Container)`
+  background-color: ${({ theme }) => theme.surface};
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
   height: 5rem;
   padding: 0 0.5rem;
 `;
@@ -22,21 +25,21 @@ const Brand = styled(Link)`
   font-family: "Dosis";
   font-weight: bold;
   font-size: 1.5rem;
+  text-decoration: none;
+  color: ${({ theme }) => theme.text};
 `;
 
-interface NavbarProps {
-  themeToggler: () => void;
-}
+const Navbar: FunctionComponent = () => {
+  const value = useContext(ThemeContext);
 
-const Navbar: FunctionComponent<NavbarProps> = ({ themeToggler }) => {
   return (
     <nav>
       <NavContainer size={sizes.xxl}>
         <Flex>
-          <Brand to="/">Learn Japanese</Brand>
+          <Brand to="/">Japanese Quiz</Brand>
           <Grow />
           <div>
-            <button onClick={themeToggler}>Switch Theme</button>
+            <Button onClick={value.themeToggler}>Switch Theme</Button>
           </div>
         </Flex>
       </NavContainer>
