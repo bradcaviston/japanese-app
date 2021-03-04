@@ -1,6 +1,11 @@
 module.exports = {
   plugins: [
-    `gatsby-plugin-styled-components`,
+    {
+      resolve: `gatsby-plugin-styled-components`,
+      options: {
+        displayName: process.env.NODE_ENV === "development" ? true : false,
+      },
+    },
     `gatsby-plugin-react-helmet`,
     `gatsby-transformer-json`,
     {
